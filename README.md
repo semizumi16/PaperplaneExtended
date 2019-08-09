@@ -38,6 +38,7 @@ If you find any bugs or have any suggestions then don’t hesitate to contact me
 
 I would like to thank people who assisted me throughout this project:
 
+* [@AvinashReddy3108](https://github.com/AvinashReddy3108)
 * [@YouTwitFace](https://github.com/YouTwitFace)
 * [@TheDevXen](https://github.com/TheDevXen)
 * [@Skittles9823](https://github.com/Skittles9823)
