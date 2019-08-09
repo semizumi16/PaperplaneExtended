@@ -224,3 +224,9 @@ ZALG_LIST = [["̖",
               " ̷",
               " ͡",
               ]]
+
+#remove begrond
+REM_BG_API_KEY = os.environ.get("REM_BG_API_KEY", None)
+
+MAX_MESSAGE_SIZE_LIMIT = 4095
+
