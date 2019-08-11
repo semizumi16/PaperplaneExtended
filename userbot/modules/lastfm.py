@@ -127,13 +127,13 @@ async def get_curr_track(lfmbio):
                 if BIOPREFIX:
                     lfmbio = f"{BIOPREFIX} 🎧: {ARTIST} - {SONG}"
                 else:
-                    lfmbio = f"🎧: {ARTIST} - {SONG}"
+                    lfmbio = f"Nuju Ngadangukeun-🎧: {ARTIST} - {SONG}"
                 try:
                     if BOTLOG and LastLog:
                         await bot.send_message(BOTLOG_CHATID, f"Attempted to change bio to\n{lfmbio}")
                     await bot(UpdateProfileRequest(about=lfmbio))
                 except AboutTooLongError:
-                    short_bio = f"🎧: {SONG}"
+                    short_bio = f"Nuju Ngadangukeun-🎧: {SONG}"
                     await bot(UpdateProfileRequest(about=short_bio))
             else:
                 if playing is None and user_info.about != DEFAULT_BIO:
