@@ -20,7 +20,7 @@ from userbot.events import register
 UNAPPROVED_MSG = ("`Halo! Ini adalah pesan otomatis.\n\n`"
                   "`Saya belum menyetujui Anda untuk PM.`"
                   "`Harap tunggu saya untuk melihat, saya sebagian besar menyetujui PM.\n\n`"
-                  "`Sampai saat itu, tolong jangan spam PM saya, Atau anda akan diblokir dan dilaporkan!`"
+                  "`Sampai saat itu, tolong jangan spam PM saya, Atau anda akan diblokir dan dilaporkan! \n\n`"
 		  "`Terimakasih! Atas Perhatiannya.`")
 # =================================================================
 
