@@ -10,7 +10,7 @@ from userbot.events import register
 async def _(event):
 	if event.fwd_from:
 		return
-	deq = deque(list("K O N T O L"))
+	deq = deque(list("KONTOOL"))
 	for _ in range(48):
 		await asyncio.sleep(0.1)
 		await event.edit("".join(deq))
