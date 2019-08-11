@@ -29,6 +29,7 @@ pytz
 qrcode
 requests>=2.18.4
 speedtest-cli>=2.0.2
+spotify_token
 sqlalchemy>=1.2
 telethon>=1.9
 telethon-session-sqlalchemy>=0.2.6
