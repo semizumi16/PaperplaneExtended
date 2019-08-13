@@ -17,10 +17,11 @@ from userbot import (COUNT_PM, CMD_HELP, BOTLOG, BOTLOG_CHATID,
 from userbot.events import register
 
 # ========================= CONSTANTS ============================
-UNAPPROVED_MSG = ("`Hello! This is an automated message.\n\n`"
-                  "`I haven't approved you to PM yet.`"
-                  "`Please wait for me to look in, I mostly approve PMs.\n\n`"
-                  "`Until then, please don't spam my PM, you'll get blocked and reported!`")
+UNAPPROVED_MSG = ("`Halo! Ini adalah pesan otomatis.\n\n`"
+                  "`Saya belum menyetujui Anda untuk PM.`"
+                  "`Harap tunggu saya untuk melihat, saya sebagian besar menyetujui PM.\n\n`"
+                  "`Sampai saat itu, tolong jangan spam PM saya, Atau anda akan diblokir dan dilaporkan! \n\n`"
+		  "`Terimakasih! Atas Perhatiannya.`")
 # =================================================================
 
 
@@ -65,10 +66,10 @@ async def permitpm(event):
                 else:
                     COUNT_PM[event.chat_id] = COUNT_PM[event.chat_id] + 1
 
-                if COUNT_PM[event.chat_id] > 4:
+                if COUNT_PM[event.chat_id] > 3:
                     await event.respond(
-                        "`You were spamming my PM, which I didn't like.`\n"
-                        "`You have been BLOCKED and reported as SPAM, until further notice.`"
+                        "`Anda mengirim spam ke PM saya, yang tidak saya sukai.`\n"
+                        "`Anda telah DIBLOKIR dan dilaporkan sebagai SPAM, hingga pemberitahuan lebih lanjut..`"
                     )
 
                     try:
@@ -174,11 +175,11 @@ async def approvepm(apprvpm):
         try:
             approve(uid)
         except IntegrityError:
-            await apprvpm.edit("`User may already be approved.`")
+            await apprvpm.edit("`Anda mungkin sudah disetujui.`")
             return
 
         await apprvpm.edit(
-            f"[{name0}](tg://user?id={uid}) `approved to PM!`"
+            f"[{name0}](tg://user?id={uid}) `Disetujui untuk PM!`"
         )
 
         async for message in apprvpm.client.iter_messages(apprvpm.chat_id, 

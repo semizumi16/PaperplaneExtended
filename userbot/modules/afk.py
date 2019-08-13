@@ -56,7 +56,7 @@ async def mention_afk(mention):
             if mention.sender_id not in USERS:
                 if AFKREASON:
                     await mention.reply(
-                        f"Sorry! I am AFK because of `{AFKREASON}`. I'll have a look at this as soon as I come back."
+                        f"Maaf! saya  offline dulu, karena mau `{AFKREASON}`. Tunggu aja, nanti saya kembali online kok, tapi ntah kapan."
                     )
                 else:
                     await mention.reply(
@@ -93,7 +93,7 @@ async def afk_on_pm(sender):
             if sender.sender_id not in USERS:
                 if AFKREASON:
                     await sender.reply(
-                        f"Sorry! I am AFK due to `{AFKREASON}`. I'll respond as soon I come back."
+                        f"Maaf! saya AFK dulu sebentar karena mau `{AFKREASON}`. Sans aja, nanti saya balik lagi."
                     )
                 else:
                     await sender.reply(
