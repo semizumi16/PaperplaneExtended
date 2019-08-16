@@ -34,27 +34,26 @@ async def kang(args):
 
         if message and message.media:
             if isinstance(message.media, MessageMediaPhoto):
-                await args.edit("Kanging this pic...")
+                await args.edit("Converting this into a sticker...")
                 photo = io.BytesIO()
                 photo = await bot.download_media(message.photo, photo)
             elif "image" in message.media.document.mime_type.split('/'):
-                await args.edit("Kanging this pic...")
+                await args.edit("Kanging this sticker...")
                 photo = io.BytesIO()
                 await bot.download_file(message.media.document, photo)
                 if (DocumentAttributeFilename(file_name='sticker.webp')
                         in message.media.document.attributes):
-                    await args.edit("Enslaving this sticker...")
                     emoji = message.media.document.attributes[1].alt
                     emojibypass = True
             elif "tgsticker" in message.media.document.mime_type:
                 await args.edit("Taming this animated sticker...")
                 await bot.download_file(message.media.document, 'AnimatedSticker.tgs')
-                
+
                 attributes = message.media.document.attributes
                 for attribute in attributes:
                     if isinstance(attribute, DocumentAttributeSticker):
                         emoji = attribute.alt
-                        
+
                 emojibypass = True
                 is_anim = True
                 photo = 1
@@ -62,7 +61,7 @@ async def kang(args):
                 await args.edit("Unsupported File!")
                 return
         else:
-            await args.edit("Reply to photo to kang it bruh")
+            await args.edit("Master, how do I kang that?!?")
             return
 
         if photo:
@@ -129,7 +128,7 @@ async def kang(args):
                     # Ensure user doesn't get spamming notifications
                     await bot.send_read_acknowledge(conv.chat_id)
             else:
-                await args.edit("Brewing new Pack...")
+                await args.edit("Brewing a new Pack...")
                 async with bot.conversation('Stickers') as conv:
                     await conv.send_message(cmd)
                     await conv.get_response()
@@ -204,15 +203,18 @@ async def resize_photo(photo):
 @register(outgoing=True, pattern="^.stkrinfo$")
 async def get_pack_info(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
+        if not event.is_reply:
+            await bot.update_message(event, PACKINFO_HELP)
+            return
         rep_msg = await event.get_reply_message()
         if not rep_msg.document:
-            await event.client.edit("Reply to a sticker to get the pack details")
+            await event.edit("`Reply to a sticker to get the pack details`")
             return
         stickerset_attr = rep_msg.document.attributes[1]
         if not isinstance(stickerset_attr, DocumentAttributeSticker):
-            await event.client.edit("This is not a sticker. Reply to a sticker.")
+            await event.edit("`This is not a sticker. Reply to a sticker.`")
             return
-        get_stickerset = await event.client(GetStickerSetRequest(InputStickerSetID(id=stickerset_attr.stickerset.id, access_hash=stickerset_attr.stickerset.access_hash)))
+        get_stickerset = await bot(GetStickerSetRequest(InputStickerSetID(id=stickerset_attr.stickerset.id, access_hash=stickerset_attr.stickerset.access_hash)))
         pack_emojis = []
         for document_sticker in get_stickerset.packs:
             if document_sticker.emoticon not in pack_emojis:
@@ -223,7 +225,7 @@ async def get_pack_info(event):
                 f"**Archived:** `{get_stickerset.set.archived}`\n" \
                 f"**Stickers In Pack:** `{len(get_stickerset.packs)}`\n" \
                 f"**Emojis In Pack:** {' '.join(pack_emojis)}"
-        await event.client.edit(OUTPUT)
+        await event.edit(OUTPUT)
 
 CMD_HELP.update({
     "stickers": ".kang\

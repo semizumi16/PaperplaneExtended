@@ -30,7 +30,8 @@ async def permitpm(event):
     """ Prohibits people from PMing you without approval. \
         Will block retarded nibbas automatically. """
     if PM_AUTO_BAN:
-        if event.is_private and not (await event.get_sender()).bot:
+        self_user = await event.client.get_me()
+        if event.is_private and event.chat_id != 777000 and event.chat_id != self_user.id and not (await event.get_sender()).bot:
             try:
                 from userbot.modules.sql_helper.pm_permit_sql import is_approved
                 from userbot.modules.sql_helper.globals import gvarstatus
@@ -100,29 +101,35 @@ async def permitpm(event):
                             + " was just another retarded nibba",
                         )
 
-
 @register(disable_edited=True, outgoing=True)
 async def auto_accept(event):
-    """ Will approve nibbas automatically if you texted them first. """
-    if event.is_private and not (await event.get_sender()).bot:
+    """ Will approve automatically if you texted them first. """
+    self_user = await event.client.get_me()
+    if event.is_private and event.chat_id != 777000 and event.chat_id != self_user.id and not (await event.get_sender()).bot:
         try:
             from userbot.modules.sql_helper.pm_permit_sql import is_approved
             from userbot.modules.sql_helper.pm_permit_sql import approve
         except AttributeError:
             return
 
-    chat = await event.get_chat()
-    if isinstance(chat, User):
-        if is_approved(event.chat_id) or chat.bot:
-            return
-        async for message in event.client.iter_messages(chat.id, reverse=True, limit=1):
-            if message.from_id == (await event.client.get_me()).id:
-                approve(chat.id)
+        chat = await event.get_chat()
+        if isinstance(chat, User):
+            if is_approved(event.chat_id) or chat.bot:
+                return
+            async for message in event.client.iter_messages(
+                    event.chat_id, reverse=True, limit=1
+            ):
+                if message.from_id == (await event.client.get_me()).id:
+                    try:
+                        approve(chat.id)
+                    except IntegrityError:
+                        return
                 if BOTLOG:
                     await event.client.send_message(
                         BOTLOG_CHATID,
                         "#AUTO-APPROVED\n"
-                        + "User: " + f"[{chat.first_name}](tg://user?id={chat.id})",
+                        + "User: " +
+                        f"[{chat.first_name}](tg://user?id={chat.id})",
                     )
 
 

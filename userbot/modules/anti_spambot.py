@@ -26,11 +26,11 @@ async def welcome_mute(welcm):
             return
         if welcm.user_joined or welcm.user_added:
             adder = None
-            ignore = None
+            ignore = False
 
             if welcm.user_added:
                 ignore = False
-                adder = welcm._added_by
+                adder = welcm.action_message.from_id
 
             async for admin in bot.iter_participants(welcm.chat_id, filter=ChannelParticipantsAdmins):
                 if admin.id == adder:
@@ -39,14 +39,19 @@ async def welcome_mute(welcm):
 
             if ignore:
                 return
+            
             elif welcm.user_joined:
                 users_list = hasattr(welcm.action_message.action, "users")
                 if users_list:
                     users = welcm.action_message.action.users
                 else:
                     users = [welcm.action_message.from_id]
+                    
             await sleep(5)
             spambot = False
+            
+            if not users:
+                return
 
             for user_id in users:
                 async for message in bot.iter_messages(
@@ -79,6 +84,7 @@ async def welcome_mute(welcm):
                         data = r.json()
                     except:
                         print("CAS check failed, falling back to legacy anti_spambot behaviour.")
+                        data = None
                         pass
 
                     if data and data['ok']:
@@ -109,7 +115,7 @@ async def welcome_mute(welcm):
                                 "Info"
                         ):
                             if user.last_name == "Bot":
-                                reason = "Known Spam Bot"
+                                reason = "Known spambot"
                                 spambot = True
 
                     if spambot:
@@ -128,7 +134,8 @@ async def welcome_mute(welcm):
                         await welcm.reply(
                             "@admins\n"
                             "`ANTI SPAMBOT DETECTOR!\n"
-                            "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`")
+                            "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`\n"
+                            f"REASON: {reason}")
                 else:
                     await welcm.reply(
                         "`Potential Spambot Detected! Kicking away! "
@@ -148,16 +155,19 @@ async def welcome_mute(welcm):
                             await welcm.reply(
                                 "@admins\n"
                                 "`ANTI SPAMBOT DETECTOR!\n"
-                                "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`")
+                                "THIS USER MATCHES MY ALGORITHMS AS A SPAMBOT!`\n"
+                                f"REASON: {reason}")
 
                 if BOTLOG:
                     await welcm.client.send_message(
                         BOTLOG_CHATID,
                         "#ANTI_SPAMBOT REPORT\n"
                         f"USER: [{user.first_name}](tg://user?id={user.id})\n"
-                        f"CHAT: {welcm.chat.title}(`{welcm.chat_id}`)\n"
+                        f"USER ID: `{user.id}`\n"
+                        f"CHAT: {welcm.chat.title}\n"
+                        f"CHAT ID: `{welcm.chat_id}`\n"
                         f"REASON: {reason}\n"
-                        f"MESSAGE:\n{message.text}"
+                        f"MESSAGE:\n\n{message.text}"
                     )
     except ValueError:
         pass

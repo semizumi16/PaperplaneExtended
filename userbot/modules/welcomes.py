@@ -1,5 +1,4 @@
 from telethon.utils import pack_bot_file_id
-from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings, add_welcome_setting, rm_welcome_setting, update_previous_welcome
 from userbot.events import register
 from userbot import CMD_HELP, bot, LOGS, CLEAN_WELCOME
 from telethon.events import ChatAction
@@ -7,6 +6,13 @@ from telethon.events import ChatAction
 
 @bot.on(ChatAction)
 async def welcome_to_chat(event):
+    
+    try:
+        from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
+        from userbot.modules.sql_helper.welcome_sql import update_previous_welcome
+    except AttributeError:
+        return
+    
     cws = get_current_welcome_settings(event.chat_id)
     if cws:
         """user_added=True,
@@ -73,14 +79,19 @@ async def welcome_to_chat(event):
                                                      my_mention=my_mention),
                 file=cws.media_file_id
             )
+            
             update_previous_welcome(event.chat_id, current_message.id)
 
 
 @register(outgoing=True, pattern=r"^.welcome(?: |$)(.*)")
 async def save_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
-        if event.fwd_from:
+        try:
+            from userbot.modules.sql_helper.welcome_sql import add_welcome_setting
+        except AttributeError:
+            await event.edit("`Running on Non-SQL mode!`")
             return
+        
         msg = await event.get_reply_message()
         input_str = event.pattern_match.group(1)
         if input_str:
@@ -104,19 +115,27 @@ async def save_welcome(event):
 @register(outgoing=True, pattern="^.show welcome$")
 async def show_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
-        if event.fwd_from:
+        try:
+            from userbot.modules.sql_helper.welcome_sql import get_current_welcome_settings
+        except AttributeError:
+            await event.edit("`Running on Non-SQL mode!`")
             return
+        
         cws = get_current_welcome_settings(event.chat_id)
         if cws:
             await event.edit(f"`The current welcome message is:`\n{cws.custom_welcome_message}")
         else:
             await event.edit("`No welcome note saved here !!`")
 
-@register(outgoing=True, pattern="^.del welcome")
+@register(outgoing=True, pattern="^.del welcome$")
 async def del_welcome(event):
     if not event.text[0].isalpha() and event.text[0] not in ("/", "#", "@", "!"):
-        if event.fwd_from:
+        try:
+            from userbot.modules.sql_helper.welcome_sql import rm_welcome_setting
+        except AttributeError:
+            await event.edit("`Running on Non-SQL mode!`")
             return
+        
         if rm_welcome_setting(event.chat_id) is True:
             await event.edit("`Welcome note deleted for this chat.`")
         else:
