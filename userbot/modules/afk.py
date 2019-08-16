@@ -90,13 +90,13 @@ async def afk_on_pm(sender):
     global USERS
     global COUNT_MSG
     AFKREASON = gvarstatus("AFK_REASON")
-    if sender.is_private and sender.chat_id != 777000 and not (await sender.get_sender()).bot:
+    if sender.is_private and sender.sender_id != 777000 and not (await sender.get_sender()).bot:
         try:
             from userbot.modules.sql_helper.pm_permit_sql import is_approved
         except AttributeError:
             return
-        apprv = is_approved(sender.chat_id)
-        if (PM_AUTO_BAN and not apprv) and ISAFK:
+        apprv = is_approved(sender.sender_id)
+        if (PM_AUTO_BAN and apprv) and ISAFK:
             if sender.sender_id not in USERS:
                 if AFKREASON:
                     await sender.reply(
@@ -108,7 +108,7 @@ async def afk_on_pm(sender):
                     )
                 USERS.update({sender.sender_id: 1})
                 COUNT_MSG = COUNT_MSG + 1
-            elif sender.sender_id in USERS:
+            elif apprv and sender.sender_id in USERS:
                 if USERS[sender.sender_id] % 2 == 0:
                     if AFKREASON:
                         await sender.reply(
