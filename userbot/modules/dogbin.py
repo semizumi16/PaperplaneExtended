@@ -22,7 +22,7 @@ async def paste(pstl):
         reply_id = pstl.reply_to_msg_id
 
         if not match and not reply_id:
-            await pstl.edit("Master,please give me something to paste.")
+            await pstl.edit("Elon Musk said I cannot paste void.")
             return
 
         if match:
@@ -39,7 +39,7 @@ async def paste(pstl):
                     m_list = fd.readlines()
                 message = ""
                 for m in m_list:
-                    message += m.decode("UTF-8") + "\r\n"
+                    message += m.decode("UTF-8") + "\r"
                 os.remove(downloaded_file_name)
             else:
                 message = message.message
@@ -96,7 +96,7 @@ async def get_dogbin_content(dog_url):
         elif message.startswith("del.dog/"):
             message = message[len("del.dog/"):]
         else:
-            await dog_url.edit("`Master I don't think that's a dogbin url...`")
+            await dog_url.edit("`Is that even a dogbin url?`")
             return
 
         resp = get(f'{DOGBIN_URL}raw/{message}')
