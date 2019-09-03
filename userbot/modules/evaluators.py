@@ -1,9 +1,8 @@
 # Copyright (C) 2019 The Raphielscape Company LLC.
 #
-# Licensed under the Raphielscape Public License, Version 1.b (the "License");
+# Licensed under the Raphielscape Public License, Version 1.c (the "License");
 # you may not use this file except in compliance with the License.
 #
-
 """ Userbot module for executing code and terminal commands from Telegram. """
 
 import asyncio
@@ -12,13 +11,15 @@ from os import remove
 from sys import executable
 
 from userbot import CMD_HELP, BOTLOG, BOTLOG_CHATID
-from userbot.events import register
+from userbot.events import register, errors_handler
 
 
 @register(outgoing=True, pattern="^.eval(?: |$)(.*)")
+@errors_handler
 async def evaluate(query):
     """ For .eval command, evaluates the given Python expression. """
-    if not query.text[0].isalpha() and query.text[0] not in ("/", "#", "@", "!"):
+    if not query.text[0].isalpha() and query.text[0] not in ("/", "#", "@",
+                                                             "!"):
         if query.is_channel and not query.is_group:
             await query.edit("`Eval isn't permitted on channels`")
             return
@@ -49,37 +50,33 @@ async def evaluate(query):
                         )
                         remove("output.txt")
                         return
-                    await query.edit(
-                        "**Query: **\n`"
-                        f"{expression}"
-                        "`\n**Result: **\n`"
-                        f"{evaluation}"
-                        "`"
-                    )
+                    await query.edit("**Query: **\n`"
+                                     f"{expression}"
+                                     "`\n**Result: **\n`"
+                                     f"{evaluation}"
+                                     "`")
             else:
-                await query.edit(
-                    "**Query: **\n`"
-                    f"{expression}"
-                    "`\n**Result: **\n`No Result Returned/False`"
-                )
+                await query.edit("**Query: **\n`"
+                                 f"{expression}"
+                                 "`\n**Result: **\n`No Result Returned/False`")
         except Exception as err:
-            await query.edit(
-                "**Query: **\n`"
-                f"{expression}"
-                "`\n**Exception: **\n"
-                f"`{err}`"
-            )
+            await query.edit("**Query: **\n`"
+                             f"{expression}"
+                             "`\n**Exception: **\n"
+                             f"`{err}`")
 
         if BOTLOG:
             await query.client.send_message(
-                BOTLOG_CHATID, f"Eval query {expression} was executed successfully"
-            )
+                BOTLOG_CHATID,
+                f"Eval query {expression} was executed successfully")
 
 
 @register(outgoing=True, pattern=r"^.exec(?: |$)([\s\S]*)")
+@errors_handler
 async def run(run_q):
     """ For .exec command, which executes the dynamically created program """
-    if not run_q.text[0].isalpha() and run_q.text[0] not in ("/", "#", "@", "!"):
+    if not run_q.text[0].isalpha() and run_q.text[0] not in ("/", "#", "@",
+                                                             "!"):
         code = run_q.pattern_match.group(1)
 
         if run_q.is_channel and not run_q.is_group:
@@ -104,10 +101,11 @@ execute. Use .help exec for an example.```")
 
         command = "".join(f"\n {l}" for l in code.split("\n.strip()"))
         process = await asyncio.create_subprocess_exec(
-            executable, '-c', command.strip(),
+            executable,
+            '-c',
+            command.strip(),
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
+            stderr=asyncio.subprocess.PIPE)
         stdout, stderr = await process.communicate()
         result = str(stdout.decode().strip()) \
             + str(stderr.decode().strip())
@@ -125,28 +123,24 @@ execute. Use .help exec for an example.```")
                 )
                 remove("output.txt")
                 return
-            await run_q.edit(
-                "**Query: **\n`"
-                f"{codepre}"
-                "`\n**Result: **\n`"
-                f"{result}"
-                "`"
-            )
+            await run_q.edit("**Query: **\n`"
+                             f"{codepre}"
+                             "`\n**Result: **\n`"
+                             f"{result}"
+                             "`")
         else:
-            await run_q.edit(
-                "**Query: **\n`"
-                f"{codepre}"
-                "`\n**Result: **\n`No Result Returned/False`"
-            )
+            await run_q.edit("**Query: **\n`"
+                             f"{codepre}"
+                             "`\n**Result: **\n`No Result Returned/False`")
 
         if BOTLOG:
             await run_q.client.send_message(
                 BOTLOG_CHATID,
-                "Exec query " + codepre + " was executed successfully"
-            )
+                "Exec query " + codepre + " was executed successfully")
 
 
 @register(outgoing=True, pattern="^.term(?: |$)(.*)")
+@errors_handler
 async def terminal_runner(term):
     """ For .term command, runs bash commands and scripts on your server. """
     if not term.text[0].isalpha() and term.text[0] not in ("/", "#", "@", "!"):
@@ -174,8 +168,7 @@ async def terminal_runner(term):
         process = await asyncio.create_subprocess_shell(
             command,
             stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE
-        )
+            stderr=asyncio.subprocess.PIPE)
         stdout, stderr = await process.communicate()
         result = str(stdout.decode().strip()) \
             + str(stderr.decode().strip())
@@ -194,19 +187,9 @@ async def terminal_runner(term):
             return
 
         if uid is 0:
-            await term.edit(
-                "`"
-                f"{curruser}:~# {command}"
-                f"\n{result}"
-                "`"
-            )
+            await term.edit("`" f"{curruser}:~# {command}" f"\n{result}" "`")
         else:
-            await term.edit(
-                "`"
-                f"{curruser}:~$ {command}"
-                f"\n{result}"
-                "`"
-            )
+            await term.edit("`" f"{curruser}:~$ {command}" f"\n{result}" "`")
 
         if BOTLOG:
             await term.client.send_message(
@@ -214,12 +197,9 @@ async def terminal_runner(term):
                 "Terminal Command " + command + " was executed sucessfully",
             )
 
-CMD_HELP.update({
-    "eval": ".eval 2 + 3\nUsage: Evalute mini-expressions."
-})
-CMD_HELP.update({
-    "exec": ".exec print('hello')\nUsage: Execute small python scripts."
-})
-CMD_HELP.update({
-    "term": ".term ls\nUsage: Run bash commands and scripts on your server."
-})
+
+CMD_HELP.update({"eval": ".eval 2 + 3\nUsage: Evalute mini-expressions."})
+CMD_HELP.update(
+    {"exec": ".exec print('hello')\nUsage: Execute small python scripts."})
+CMD_HELP.update(
+    {"term": ".term ls\nUsage: Run bash commands and scripts on your server."})
